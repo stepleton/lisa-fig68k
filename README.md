@@ -67,7 +67,7 @@ may be a useful reference. For more general introductions to Forth, [_Starting
 Forth_]( https://www.forth.com/starting-forth/0-starting-forth/) is apparently
 a classic. I've also enjoyed reading the [_Jupiter ACE Users Manual_](
 http://jupiter-ace.co.uk/usermanual.html) by [Steve Vickers](
-https://en.wikipedia.org/wiki/Steve_Vickers_(computer_scientist%29): it
+https://en.wikipedia.org/wiki/Steve_Vickers_%28computer_scientist%29): it
 describes a different dialect of Forth but is an enjoyable introduction to the
 languuage.
 
@@ -109,8 +109,8 @@ interpreter:
 There are additional variations from canonical fig-Forth introduced by Kenneth
 Mantei (the interpreter's original author) and Nooy et al. (the people who
 transcribed Mantei's code it into Motorola-syntax assembly). Refer to [the
-documentation supplied with the original interpreter](original/F68K.txt) for
-more details.
+documentation supplied with the original interpreter](
+original_fig68k_distribution/F68K.TXT) for more details.
 
 
 ## User interface notes
@@ -173,7 +173,7 @@ Files in the [original_fig68k_distribution](original_fig68k_distribution)
 directory are, as the name suggests, the original unmodified fig68k source code
 files and documentation from [Albert van der Horst's webpage](
 https://home.hccnet.nl/a.w.m.van.der.horst/forthimpl.html). See its
-[README.txt](original_fig68k_distribution/README.txt) for details. I include
+[README.TXT](original_fig68k_distribution/README.TXT) for details. I include
 them here for convenient study and context; it's important to remember that
 these files are all the product of the hard work of Nooy, Kattenberg, van der
 Horst, and originally Mantei. It's difficult for me to say with any legal
