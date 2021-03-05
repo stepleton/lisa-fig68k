@@ -65,7 +65,8 @@ USRVER	EQU	0	*USER VERSION #
 *
 ACR	EQU	$0D	*CARRIAGE RETURN
 BELL	EQU	$07	*(^G)
-BSIN	EQU	$7F	*INPUT BACKSPACE
+; Customised for the lisa_io library, so defined in forth.x68
+; BSIN	EQU	$7F	*INPUT BACKSPACE
 BSOUT	EQU	$08	*OUTPUT BACKSPACE (^H)
 LF	EQU	$0A	*LINE FEED
 FF	EQU	$0C	*FORM FEED (^L)
@@ -73,9 +74,11 @@ FF	EQU	$0C	*FORM FEED (^L)
 * MEMORY ALLOCATION
 *
 BM	EQU	$1000		*BOTTOM OF MEMORY
-EM	EQU	$4800		*TOP OF MEMORY
+; Customised for the Lisa, so defined in forth.x68
+; EM	EQU	$4800		*TOP OF MEMORY
 NSCR	EQU	2		*NUMBER OF 1024 BYTE SCREENS
-KBBUF	EQU	256		*DATA BYTES PER DISK BUFFER
+; Customised for the Lisa, so defined in forth.x68
+; KBBUF	EQU	256		*DATA BYTES PER DISK BUFFER
 BSCRN	EQU	$400/KBBUF	* BUFFERS/SCREEN
 RTS	EQU	$200		*USER PAGE & RETURN STACK SPACE
 USS	EQU	$1E0		*USER STACK SPACE & TERM BUFFER SPACE
@@ -220,34 +223,44 @@ IOARE	ORG	USPAG+RTS
 *
 PORTAD	EQU	$010040
 *
-XEMIT	MOVE.L	#PORTAD,A0
-XEMIT1	BTST	#1,(A0)
-	BEQ.S	XEMIT1
-	MOVE.B	D0,2(A0)
-	RTS      
+; Implemented in forth.x68, so commented out here
+; XEMIT	MOVE.L	#PORTAD,A0
+; XEMIT1	BTST	#1,(A0)
+; 	BEQ.S	XEMIT1
+; 	MOVE.B	D0,2(A0)
+; 	RTS      
 *
-XKEY	MOVE.L	#PORTAD,A0
-XKEY1	BTST	#0,(A0)
-	BEQ.S	XKEY1
-	MOVE.B	2(A0),D0
-	AND.W	#$7F,D0
-	RTS      
+; Implemented in forth.x68, so commented out here
+; XKEY	MOVE.L	#PORTAD,A0
+; XKEY1	BTST	#0,(A0)
+; 	BEQ.S	XKEY1
+; 	MOVE.B	2(A0),D0
+; 	AND.W	#$7F,D0
+; 	RTS      
 *
-XCR	MOVEQ	#ACR,D0
-	JSR	XEMIT
-	MOVEQ	#LF,D0
-	JSR	XEMIT
-	RTS
+; Implemented in forth.x68, so commented out here
+; XCR	MOVEQ	#ACR,D0
+; 	JSR	XEMIT
+; 	MOVEQ	#LF,D0
+; 	JSR	XEMIT
+; 	RTS
 *
-XQTERM	MOVE.L	#PORTAD,A0
-	MOVE.B	(A0),D0
-	AND.W	#1,D0
-	RTS      
+; Implemented in forth.x68, so commented out here
+; XQTERM	MOVE.L	#PORTAD,A0
+; 	MOVE.B	(A0),D0
+; 	AND.W	#1,D0
+; 	RTS      
 *
-XRSLW	RTS
+; Implemented in forth.x68, so commented out here
+; XRSLW	RTS
 *
 *---------------------------------------------------
 *
+; The Lisa port doesn't keep its I/O routines in IOARE, so we would like to
+; have the FORTH dictionary start further back; unfortunately, getting rid of
+; IOARE causes the interpreter to hang if you try to define a new word;
+; something to figure out later
+; DP0	ORG	USPAG+RTS	*START OF FORTH DICTIONARY 
 DP0	ORG	$2000	*START OF FORTH DICTIONARY 
 *
 	DC.B	$83	* LIT
@@ -3354,10 +3367,42 @@ PORIG	DC.W	DOCOL
 	DC.W	PLUS
 	DC.W	SEMIS
 *
+* --------------------------------------------------
+* Locally-added Apple Lisa-specific routines
+*
+* These are interposed here owing to uncertainty about how to update pointers
+* that refer to the last item in the dictionary, DR0 --- so, we leave DR0 last
+* and put our custom routines just before it
+*
+	DC.B	0,$84	* HOME
+	DC.B	'HOM'
+	DC.B	$80+'E'
+	DC.W	PORIG-$0A
+HOME	DC.W	2+*
+	BSR	XHOME
+	MOVE.W	(A4)+,A5
+	MOVE.W	(A5)+,A0
+	JMP	(A0)
+*
+	DC.B	$83	* BYE (Quit to the ROM monitor)
+	DC.B	'BY'
+	DC.B	$80+'E'
+	DC.W	HOME-7
+BYE	DC.W	2+*
+	CLR.L	D0
+	SUBA.L	A2,A2
+	SUBA.L	A3,A3
+	JMP	$FE0084
+*
+* --------------------------------------------------
+* And back to DR0
+*
 	DC.B	$83	* DR0
 	DC.B	'DR'
 	DC.B	$80+'0'
-	DC.W	PORIG-$0A
+; Per the above, this is altered to point now to the last Lisa-specific routine
+;	DC.W	PORIG-$0A
+	DC.W	BYE-6
 DR0	DC.W	DOCOL
 	DC.W	ZERO
 	DC.W	OFSET
